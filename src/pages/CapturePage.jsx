@@ -15,15 +15,32 @@ import styles from './CapturePage.module.css';
 
 /**
  * テキストから漢字文字を抽出するユーティリティ
+ * 波線（~, 〰, ～）や記号が近くにある漢字を優先する
  * @param {string} text - OCRなどで取得したテキスト
  * @returns {Array} - 見つかった漢字と、データベースに存在するかどうかの情報
  */
 function extractKanjiFromText(text) {
+    // 漢字の周辺にある「波線」や「下線」に見える記号
+    const targetIndicatorRegex = /[~〰～\-_=＝]/;
     const kanjiRegex = /[\u4E00-\u9FFF]/g;
-    const found = [...new Set(text.match(kanjiRegex) || [])];
-    return found.map((char) => ({
+
+    // テキストを1文字ずつ見て、記号の隣にある漢字を特定する
+    const chars = [...text];
+    const targetKanji = new Set();
+
+    for (let i = 0; i < chars.length; i++) {
+        if (targetIndicatorRegex.test(chars[i])) {
+            // 前後の文字をチェック
+            if (i > 0 && /[\u4E00-\u9FFF]/.test(chars[i - 1])) targetKanji.add(chars[i - 1]);
+            if (i < chars.length - 1 && /[\u4E00-\u9FFF]/.test(chars[i + 1])) targetKanji.add(chars[i + 1]);
+        }
+    }
+
+    const allKanjiFound = [...new Set(text.match(kanjiRegex) || [])];
+    return allKanjiFound.map((char) => ({
         character: char,
         data: findKanji(char),
+        isStudyTarget: targetKanji.has(char)
     }));
 }
 
@@ -88,6 +105,20 @@ function CapturePage() {
 
             const extractedList = extractKanjiFromText(text);
             setFoundKanjiList(extractedList);
+
+            // 波線の近くにあった漢字を自動選択する
+            const autoSelected = new Set();
+            extractedList.forEach(item => {
+                if (item.isStudyTarget && item.data) {
+                    autoSelected.add(item.character);
+                }
+            });
+            setAddedKanjiSet(autoSelected);
+
+            // ストアも更新
+            const selectedList = [...autoSelected].map(findKanji).filter(Boolean);
+            setExtractedKanji(selectedList);
+
             setOcrStatus('done');
         } catch (error) {
             console.error('OCRエラー:', error);

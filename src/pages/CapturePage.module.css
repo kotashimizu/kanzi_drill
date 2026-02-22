@@ -142,6 +142,28 @@
     color: var(--color-text-secondary);
 }
 
+.kanjiChipTarget {
+    background: #FFFEDC;
+    border-color: #FFB3D1;
+    box-shadow: 0 4px 0 #FFB3D1;
+    position: relative;
+}
+
+.recommendBadge {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    background: #FFB3D1;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 20px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
 /* 処理中 */
 .progressCard {
     padding: 24px;

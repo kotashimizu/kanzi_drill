@@ -36,8 +36,9 @@
   --border-radius-lg: 40px;
 
   /* 丸みのある読みやすいフォント */
-  --font-primary: 'M PLUS Rounded 1c', 'Fredoka', sans-serif;
-  --font-display: 'Fredoka', 'M PLUS Rounded 1c', sans-serif;
+  /* 外部フォントに依存せず、端末内のフォントで完結させる */
+  --font-primary: 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
+  --font-display: var(--font-primary);
 
   /* 立体感のある柔らかい影（少し控えめに） */
   --shadow-card: 0 8px 20px rgba(108, 99, 255, 0.08);
@@ -99,27 +100,27 @@ body {
   justify-content: center;
   gap: 10px;
   padding: 16px 32px;
-  background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
-  color: #FFFFFF;
-  border: none;
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  border: 3px solid #F5D142;
   border-radius: var(--border-radius-lg);
   font-size: 1.125rem;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
-  box-shadow: var(--shadow-button);
+  box-shadow: 0 6px 0 #F5D142;
   transition: var(--transition-pop);
   text-decoration: none;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
   filter: brightness(1.05);
+  box-shadow: 0 8px 0 #F5D142;
 }
 
 .btn-primary:active {
   transform: translateY(4px);
-  box-shadow: var(--shadow-button-press);
+  box-shadow: 0 2px 0 #F5D142;
 }
 
 .btn-secondary {
@@ -130,16 +131,16 @@ body {
   padding: 12px 24px;
   background: #FFFFFF;
   color: var(--color-text-primary);
-  border: 2px solid var(--color-border);
+  border: 3px solid var(--color-border);
   border-radius: var(--border-radius-md);
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: var(--transition-pop);
-  box-shadow: 0 4px 0 var(--color-border);
+  box-shadow: 0 6px 0 var(--color-border);
 }
 
 .btn-secondary:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-dark);
 }
 
 .btn-secondary:active {
