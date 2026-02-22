@@ -1,0 +1,191 @@
+.page {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 8% 15%, rgba(255, 210, 0, 0.2), transparent 35%),
+        radial-gradient(circle at 88% 80%, rgba(255, 179, 209, 0.24), transparent 38%),
+        linear-gradient(180deg, #fffef8 0%, #fffaf1 100%);
+}
+
+.bgGlowTop {
+    position: absolute;
+    top: -120px;
+    left: -80px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(255, 210, 0, 0.18);
+    filter: blur(24px);
+}
+
+.bgGlowBottom {
+    position: absolute;
+    right: -80px;
+    bottom: -90px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 179, 209, 0.2);
+    filter: blur(24px);
+}
+
+.container {
+    width: min(940px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 48px 0 72px;
+    position: relative;
+    z-index: 1;
+}
+
+.hero {
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid #f5e9ba;
+    border-radius: 28px;
+    padding: 32px 24px;
+    box-shadow: 0 10px 24px rgba(74, 52, 43, 0.08);
+}
+
+.badge {
+    display: inline-block;
+    background: #ffe69d;
+    border: 2px solid #f5d142;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: clamp(1.75rem, 4.8vw, 3rem);
+    line-height: 1.25;
+    color: #3f2f27;
+    margin: 0 0 14px;
+}
+
+.title span {
+    color: #d46f39;
+}
+
+.subtitle {
+    color: #5f4d44;
+    font-size: clamp(1rem, 2.4vw, 1.15rem);
+    margin: 0 0 20px;
+}
+
+.heroActions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.problemCard,
+.features,
+.safetyCard,
+.cta {
+    margin-top: 18px;
+    background: #ffffff;
+    border: 3px solid #f5e9ba;
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow: 0 8px 18px rgba(74, 52, 43, 0.06);
+}
+
+.problemCard h2,
+.features h2,
+.safetyCard h2,
+.cta h2 {
+    margin: 0 0 14px;
+    font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+    color: #3f2f27;
+}
+
+.problemCard ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    color: #5f4d44;
+    line-height: 1.8;
+}
+
+.featureGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.feature {
+    background: linear-gradient(180deg, #fffef8, #fff9f0);
+    border: 2px solid #f4e7b7;
+    border-radius: 16px;
+    padding: 14px;
+}
+
+.feature h3 {
+    margin: 8px 0 6px;
+    color: #3f2f27;
+    font-size: 1rem;
+}
+
+.feature p {
+    margin: 0;
+    color: #5f4d44;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.safetyCard {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    align-items: start;
+}
+
+.safetyIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: #e8fff0;
+    border: 2px solid #bde6c8;
+    color: #1d8c56;
+}
+
+.safetyCard p {
+    margin: 0 0 6px;
+    color: #5f4d44;
+}
+
+.note {
+    font-size: 0.9rem;
+    color: #7a6b64;
+}
+
+.cta {
+    text-align: center;
+}
+
+@media (max-width: 760px) {
+    .container {
+        width: min(640px, calc(100% - 24px));
+        padding: 24px 0 40px;
+    }
+
+    .hero,
+    .problemCard,
+    .features,
+    .safetyCard,
+    .cta {
+        padding: 20px 16px;
+        border-radius: 20px;
+    }
+
+    .featureGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .safetyCard {
+        grid-template-columns: 1fr;
+    }
+}
