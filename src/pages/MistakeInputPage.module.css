@@ -1,0 +1,113 @@
+.card {
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: 1.35rem;
+    margin-bottom: 8px;
+    font-weight: 900;
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+.textarea {
+    width: 100%;
+    border: 3px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 12px;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 120px;
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.previewArea {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.previewBlock {
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    padding: 10px;
+}
+
+.previewTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    font-weight: 700;
+    border-radius: 999px;
+    border: 2px solid #86efac;
+    background: #f0fdf4;
+    color: #166534;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}
+
+.chipInvalid {
+    font-weight: 700;
+    border-radius: 999px;
+    border: 2px solid #fecaca;
+    background: #fef2f2;
+    color: #991b1b;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}
+
+.savedCard {
+    padding: 16px 20px;
+}
+
+.savedTitle {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.savedChip {
+    font-weight: 800;
+    border-radius: 999px;
+    border: 2px solid var(--color-border);
+    background: #fff;
+    color: var(--color-text-primary);
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}
+
+.emptyText {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}

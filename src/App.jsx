@@ -5,6 +5,7 @@ import DrillPage from './pages/DrillPage.jsx';
 import CapturePageWrapper from './pages/CapturePage.jsx';
 import StudyPage from './pages/StudyPage.jsx';
 import ProgressPage from './pages/ProgressPage.jsx';
+import MistakeInputPage from './pages/MistakeInputPage.jsx';
 import BottomNav from './components/BottomNav.jsx';
 
 /**
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/capture" element={<CapturePageWrapper />} />
                 <Route path="/study" element={<StudyPage />} />
                 <Route path="/progress" element={<ProgressPage />} />
+                <Route path="/mistakes" element={<MistakeInputPage />} />
             </Routes>
             <BottomNav />
         </div>
