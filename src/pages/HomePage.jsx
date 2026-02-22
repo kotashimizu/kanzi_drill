@@ -4,7 +4,6 @@ import { useAppStore } from '../store/appStore.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     BarChart3,
-    Target,
     PencilLine,
     Camera,
     BookOpen,
@@ -33,7 +32,6 @@ function HomePage() {
         setSelectedGrade,
         todayCorrectCount,
         currentStreak,
-        extractedKanjiList,
         setIsPhotoDrill,
         setIsFocusedDrill,
         schoolMistakeKanjiList,
@@ -251,25 +249,6 @@ function HomePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    {/* 写真から抽出した漢字がある場合のみ表示されるテスト対策ドリル */}
-                    {extractedKanjiList.length > 0 && (
-                        <button
-                            className={`${styles.actionCard} ${styles.actionCardHighlight}`}
-                            onClick={() => {
-                                setIsPhotoDrill(true);
-                                setIsFocusedDrill(false);
-                                navigate('/drill');
-                            }}
-                            id="btn-start-test-prep"
-                            aria-label="テスト対策ドリルを始める"
-                        >
-                            <div className={styles.badgeTop}>テストにでる！</div>
-                            <span className={styles.actionIcon}><Target size={40} strokeWidth={2.5} color="#D97706" /></span>
-                            <span className={styles.actionTitle}>テスト対策ドリル</span>
-                            <span className={styles.actionDesc}>撮った {extractedKanjiList.length} 文字を完璧にしよう！</span>
-                        </button>
-                    )}
-
                     {/* ドリル開始 */}
                     <button
                         className={styles.actionCard}
