@@ -1,0 +1,187 @@
+.container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.starsBackground {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
+
+/* 挨拶セクション */
+.greetingSection {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.avatarCircle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6C63FF, #EC4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(108, 99, 255, 0.5);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.greetingText {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 2px;
+}
+
+.userName {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    color: var(--color-text-primary);
+    font-weight: 900;
+}
+
+/* スコアカード */
+.scoreCard {
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.scoreTitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.scoreGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.scoreItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.scoreNumber {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.scoreLabel {
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+/* アクショングリッド */
+.actionGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.actionCard {
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(236, 72, 153, 0.2));
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    text-align: left;
+    backdrop-filter: blur(10px);
+}
+
+.actionCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(108, 99, 255, 0.3);
+    border-color: rgba(108, 99, 255, 0.5);
+}
+
+.actionCard:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+.actionIcon {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.actionTitle {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.actionDesc {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+/* ヒントカード */
+.tipCard {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.tipText {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.tipText strong {
+    color: var(--color-primary-light);
+}

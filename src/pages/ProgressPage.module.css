@@ -1,0 +1,162 @@
+.header {
+    margin-bottom: 20px;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+.cardTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+}
+
+/* スタッツカード */
+.statsCard {
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.statValue {
+    font-family: var(--font-display);
+    font-size: 1.625rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.statLabel {
+    font-size: 0.65rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    text-align: center;
+}
+
+.maxStreak {
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* マスターカード */
+.masteryCard {
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.masteryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.masteryPercentage {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--color-primary-light);
+}
+
+.masteryBar {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.masteryFill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 100px;
+}
+
+.masteryDetail {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    text-align: right;
+}
+
+/* レベルカード */
+.levelCard {
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.levelList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.levelItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.levelEmoji {
+    font-size: 1.2rem;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.levelInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.levelLabel {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.levelBar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.levelBarFill {
+    height: 100%;
+    border-radius: 100px;
+}
+
+.levelCount {
+    font-size: 0.875rem;
+    font-weight: 700;
+    width: 28px;
+    text-align: right;
+    flex-shrink: 0;
+}

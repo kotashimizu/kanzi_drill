@@ -1,0 +1,193 @@
+.header {
+    margin-bottom: 24px;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+    margin-top: 12px;
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+/* アップロードエリア */
+.uploadArea {
+    border: 2px dashed rgba(108, 99, 255, 0.5);
+    border-radius: var(--border-radius-md);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    margin-bottom: 16px;
+    overflow: hidden;
+    background: rgba(108, 99, 255, 0.05);
+    position: relative;
+}
+
+.uploadArea:hover {
+    border-color: var(--color-primary);
+    background: rgba(108, 99, 255, 0.1);
+}
+
+.uploadPlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px;
+    text-align: center;
+}
+
+.uploadIcon {
+    font-size: 3rem;
+}
+
+.uploadText {
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.uploadHint {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.imagePreviewWrapper {
+    width: 100%;
+    position: relative;
+}
+
+.imagePreview {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+}
+
+.imageOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition-smooth);
+    font-weight: 700;
+}
+
+.imagePreviewWrapper:hover .imageOverlay {
+    opacity: 1;
+}
+
+/* 処理中 */
+.progressCard {
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.processingText {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--color-primary-light);
+}
+
+.ocrProgressBar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.ocrProgressFill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 100px;
+}
+
+/* エラー */
+.errorCard {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--border-radius-sm);
+    padding: 16px;
+    text-align: center;
+    color: #FCA5A5;
+    margin-bottom: 16px;
+    font-size: 0.875rem;
+}
+
+/* 結果 */
+.resultTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--color-text-secondary);
+}
+
+.noKanjiCard {
+    padding: 24px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.8;
+}
+
+.kanjiGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.kanjiChip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: var(--color-bg-glass);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    min-width: 60px;
+    backdrop-filter: blur(10px);
+}
+
+.kanjiChip:hover:not(:disabled) {
+    border-color: var(--color-primary-light);
+}
+
+.kanjiChipSelected {
+    border-color: var(--color-primary) !important;
+    background: rgba(108, 99, 255, 0.2) !important;
+    box-shadow: 0 0 12px rgba(108, 99, 255, 0.3);
+}
+
+.kanjiChipUnknown {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.kanjiChipChar {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--color-text-primary);
+    line-height: 1;
+}
+
+.kanjiChipGrade {
+    font-size: 0.6875rem;
+    color: var(--color-primary-light);
+    font-weight: 600;
+}

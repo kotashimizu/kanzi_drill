@@ -1,0 +1,254 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.progressInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progressText {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.modeSelector {
+    display: flex;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    padding: 3px;
+    border: 1px solid var(--color-border);
+}
+
+.modeActive {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    transition: var(--transition-smooth);
+}
+
+.modeInactive {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: none;
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    transition: var(--transition-smooth);
+}
+
+/* プログレスバー */
+.progressBar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 100px;
+}
+
+/* 問題カード */
+.questionCard {
+    padding: 28px 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.questionLabel {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+    margin-top: 12px;
+}
+
+.kanjiMain {
+    font-family: var(--font-display);
+    font-size: 6rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff, var(--color-primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    animation: none;
+}
+
+.bushuInfo {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+/* 選択肢グリッド */
+.choicesGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.choiceButton {
+    background: var(--color-bg-glass);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    padding: 14px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    text-align: left;
+    backdrop-filter: blur(10px);
+    font-family: var(--font-primary);
+}
+
+.choiceButton:not(:disabled):hover {
+    border-color: var(--color-primary-light);
+    background: rgba(108, 99, 255, 0.15);
+}
+
+.choiceIndex {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.choiceText {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    word-break: break-all;
+}
+
+.choiceCorrect {
+    border-color: #10B981 !important;
+    background: rgba(16, 185, 129, 0.2) !important;
+}
+
+.choiceCorrect .choiceIndex {
+    background: #10B981;
+    color: white;
+}
+
+.choiceWrong {
+    border-color: #EF4444 !important;
+    background: rgba(239, 68, 68, 0.2) !important;
+}
+
+.choiceWrong .choiceIndex {
+    background: #EF4444;
+    color: white;
+}
+
+.choiceDisabled {
+    opacity: 0.4;
+}
+
+/* フィードバック */
+.feedback {
+    border-radius: var(--border-radius-md);
+    padding: 20px;
+    text-align: center;
+    border: 1px solid;
+}
+
+.feedbackCorrect {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.feedbackWrong {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+.feedbackIcon {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.feedbackAnswer {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+}
+
+/* 結果カード */
+.resultCard {
+    text-align: center;
+    padding: 40px 28px;
+    margin-top: 40px;
+}
+
+.resultEmoji {
+    font-size: 5rem;
+    margin-bottom: 16px;
+    display: block;
+    animation: celebrate-bounce 0.8s ease;
+}
+
+.resultTitle {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 900;
+    margin-bottom: 24px;
+}
+
+.resultScore {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.resultNumber {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--color-primary-light);
+    line-height: 1;
+}
+
+.resultDivider {
+    font-size: 2rem;
+    color: var(--color-text-secondary);
+}
+
+.resultTotal {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+}
+
+.resultUnit {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+}
