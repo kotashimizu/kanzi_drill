@@ -12,7 +12,9 @@ import {
     Lightbulb,
     Flame,
     GraduationCap,
-    Pencil
+    Pencil,
+    XCircle,
+    Zap
 } from 'lucide-react';
 import styles from './HomePage.module.css';
 
@@ -32,7 +34,10 @@ function HomePage() {
         todayCorrectCount,
         currentStreak,
         extractedKanjiList,
-        setIsPhotoDrill
+        setIsPhotoDrill,
+        setIsFocusedDrill,
+        schoolMistakeKanjiList,
+        drillMistakeKanjiList
     } = useAppStore();
 
     // 名前登録モーダルの表示状態
@@ -252,6 +257,7 @@ function HomePage() {
                             className={`${styles.actionCard} ${styles.actionCardHighlight}`}
                             onClick={() => {
                                 setIsPhotoDrill(true);
+                                setIsFocusedDrill(false);
                                 navigate('/drill');
                             }}
                             id="btn-start-test-prep"
@@ -267,7 +273,11 @@ function HomePage() {
                     {/* ドリル開始 */}
                     <button
                         className={styles.actionCard}
-                        onClick={() => navigate('/grade')}
+                        onClick={() => {
+                            setIsPhotoDrill(false);
+                            setIsFocusedDrill(false);
+                            navigate('/grade');
+                        }}
                         id="btn-start-drill"
                         aria-label="漢字ドリルを始める"
                         style={{ backgroundColor: 'var(--color-primary)', borderColor: '#F5D142' }}
@@ -275,6 +285,40 @@ function HomePage() {
                         <span className={styles.actionIcon}><PencilLine size={40} strokeWidth={2.5} color="#B45309" /></span>
                         <span className={styles.actionTitle}>ドリルをする</span>
                         <span className={styles.actionDesc}>問題をといてレベルアップ！</span>
+                    </button>
+
+                    {/* 学校小テストの不正解入力 */}
+                    <button
+                        className={styles.actionCard}
+                        onClick={() => navigate('/mistakes')}
+                        id="btn-input-mistakes"
+                        aria-label="学校でまちがえた漢字を入力する"
+                        style={{ backgroundColor: '#FEE2E2', borderColor: '#FCA5A5' }}
+                    >
+                        <span className={styles.actionIcon}><XCircle size={40} strokeWidth={2.5} color="#DC2626" /></span>
+                        <span className={styles.actionTitle}>不正解入力</span>
+                        <span className={styles.actionDesc}>学校の小テストでまちがえた漢字を登録</span>
+                    </button>
+
+                    {/* 特訓ドリル */}
+                    <button
+                        className={styles.actionCard}
+                        onClick={() => {
+                            setIsPhotoDrill(false);
+                            setIsFocusedDrill(true);
+                            navigate('/drill');
+                        }}
+                        id="btn-focused-drill"
+                        aria-label="まちがえた漢字を特訓する"
+                        style={{ backgroundColor: '#FEF3C7', borderColor: '#F59E0B' }}
+                    >
+                        <span className={styles.actionIcon}><Zap size={40} strokeWidth={2.5} color="#D97706" /></span>
+                        <span className={styles.actionTitle}>特訓する</span>
+                        <span className={styles.actionDesc}>
+                            {schoolMistakeKanjiList.length + drillMistakeKanjiList.length > 0
+                                ? `登録 ${schoolMistakeKanjiList.length + drillMistakeKanjiList.length} 件から出題`
+                                : 'ドリルで間違えた漢字を集中的に学習'}
+                        </span>
                     </button>
 
                     {/* 写真から問題を作る */}
