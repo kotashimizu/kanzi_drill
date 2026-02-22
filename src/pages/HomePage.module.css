@@ -168,16 +168,18 @@
 }
 
 .actionTitle {
-    font-size: 1.05rem;
+    font-size: 1.2rem;
     font-weight: 900;
     color: var(--color-text-primary);
+    margin-top: 4px;
 }
 
 .actionDesc {
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    color: var(--color-text-primary);
+    opacity: 0.8;
     line-height: 1.4;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 /* ヒントカード */
@@ -281,17 +283,37 @@
 .modalSubtitle {
     font-size: 0.9rem;
     color: var(--color-text-secondary);
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+}
+
+.profileForm {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fieldLabel {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--color-text-secondary);
+    padding-left: 2px;
 }
 
 .nameInput {
     width: 100%;
-    padding: 16px;
-    font-size: 1.25rem;
+    padding: 14px 16px;
+    font-size: 1.1rem;
     border: 3px solid var(--color-border);
     border-radius: var(--border-radius-md);
-    margin-bottom: 20px;
-    text-align: center;
+    text-align: left;
     font-family: inherit;
     font-weight: 800;
     color: var(--color-text-primary);
@@ -300,6 +322,49 @@
 }
 
 .nameInput:focus {
+    border-color: var(--color-primary-dark);
+}
+
+.honorificSelector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.honorificButton {
+    border: 2px solid var(--color-border);
+    background: #F8FAFC;
+    color: var(--color-text-primary);
+    border-radius: var(--border-radius-sm);
+    padding: 11px 8px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.honorificButtonActive {
+    border-color: var(--color-primary-dark);
+    background: #FFEAA7;
+    box-shadow: 0 4px 0 rgba(180, 83, 9, 0.2);
+}
+
+.gradeSelect {
+    width: 100%;
+    border: 3px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 12px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    background: white;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.gradeSelect:focus {
     border-color: var(--color-primary-dark);
 }
 

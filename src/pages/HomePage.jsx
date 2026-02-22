@@ -25,7 +25,10 @@ function HomePage() {
     const {
         userName,
         setUserName,
+        userHonorific,
+        setUserHonorific,
         selectedGrade,
+        setSelectedGrade,
         todayCorrectCount,
         currentStreak,
         extractedKanjiList,
@@ -36,6 +39,10 @@ function HomePage() {
     const [showNameModal, setShowNameModal] = useState(false);
     // 入力中の名前
     const [tempName, setTempName] = useState(userName);
+    // 入力中の敬称
+    const [tempHonorific, setTempHonorific] = useState(userHonorific || 'ちゃん');
+    // 入力中の学年（'all' or '1'〜'6'）
+    const [tempGrade, setTempGrade] = useState(selectedGrade ? String(selectedGrade) : 'all');
 
     // 名前が登録されていない場合はモーダルを表示
     useEffect(() => {
@@ -50,11 +57,14 @@ function HomePage() {
     const handleSaveName = () => {
         if (tempName.trim()) {
             setUserName(tempName.trim());
+            setUserHonorific(tempHonorific);
+            setSelectedGrade(tempGrade === 'all' ? null : Number(tempGrade));
             setShowNameModal(false);
         }
     };
 
     const displayName = userName || 'なまえ未登録';
+    const displayHonorific = userHonorific || 'ちゃん';
 
     return (
         <div className={styles.container}>
@@ -77,16 +87,55 @@ function HomePage() {
                                 <img src="/src/assets/study_mascot_helper.png" alt="マスコット" className={styles.mascotImage} style={{ animation: 'float 3s ease-in-out infinite' }} />
                             </div>
                             <h2 className={styles.modalTitle}>こんにちは！</h2>
-                            <p className={styles.modalSubtitle}>あなたの おなまえを おしえてね</p>
-                            <input
-                                type="text"
-                                className={styles.nameInput}
-                                value={tempName}
-                                onChange={(e) => setTempName(e.target.value)}
-                                placeholder="おなまえ"
-                                autoFocus
-                                onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
-                            />
+                            <p className={styles.modalSubtitle}>プロフィールを とうろくしよう</p>
+                            <div className={styles.profileForm}>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.fieldLabel} htmlFor="name-input">おなまえ</label>
+                                    <input
+                                        id="name-input"
+                                        type="text"
+                                        className={styles.nameInput}
+                                        value={tempName}
+                                        onChange={(e) => setTempName(e.target.value)}
+                                        placeholder="れい：ゆい"
+                                        autoFocus
+                                        maxLength={12}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <span className={styles.fieldLabel}>よびかた</span>
+                                    <div className={styles.honorificSelector}>
+                                        {['ちゃん', 'くん'].map((honorific) => (
+                                            <button
+                                                key={honorific}
+                                                type="button"
+                                                className={`${styles.honorificButton} ${tempHonorific === honorific ? styles.honorificButtonActive : ''}`}
+                                                onClick={() => setTempHonorific(honorific)}
+                                            >
+                                                {honorific}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.fieldLabel} htmlFor="grade-select">がくねん</label>
+                                    <select
+                                        id="grade-select"
+                                        className={styles.gradeSelect}
+                                        value={tempGrade}
+                                        onChange={(e) => setTempGrade(e.target.value)}
+                                    >
+                                        <option value="1">1年生</option>
+                                        <option value="2">2年生</option>
+                                        <option value="3">3年生</option>
+                                        <option value="4">4年生</option>
+                                        <option value="5">5年生</option>
+                                        <option value="6">6年生</option>
+                                        <option value="all">全学年ミックス</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div className={styles.modalActions}>
                                 <button
                                     className="btn-primary"
@@ -98,7 +147,12 @@ function HomePage() {
                                 {userName && (
                                     <button
                                         className="btn-secondary"
-                                        onClick={() => { setShowNameModal(false); setTempName(userName); }}
+                                        onClick={() => {
+                                            setShowNameModal(false);
+                                            setTempName(userName);
+                                            setTempHonorific(userHonorific || 'ちゃん');
+                                            setTempGrade(selectedGrade ? String(selectedGrade) : 'all');
+                                        }}
                                     >
                                         キャンセル
                                     </button>
@@ -137,10 +191,15 @@ function HomePage() {
                             <p className={styles.greetingText}>いっしょに おべんきょう しよう！</p>
                             <div
                                 className={styles.userNameContainer}
-                                onClick={() => { setTempName(userName); setShowNameModal(true); }}
+                                onClick={() => {
+                                    setTempName(userName);
+                                    setTempHonorific(userHonorific || 'ちゃん');
+                                    setTempGrade(selectedGrade ? String(selectedGrade) : 'all');
+                                    setShowNameModal(true);
+                                }}
                                 title="なまえをかえる"
                             >
-                                <h1 className={styles.userName}>{displayName} ちゃん・くん</h1>
+                                <h1 className={styles.userName}>{displayName} {displayHonorific}</h1>
                                 <Pencil size={18} className={styles.editIcon} />
                             </div>
                         </div>

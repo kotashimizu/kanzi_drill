@@ -42,6 +42,7 @@ function ProgressPage() {
         currentStreak,
         maxStreak,
         userName,
+        userHonorific,
     } = useAppStore();
 
     // 全漢字リスト
@@ -72,7 +73,7 @@ function ProgressPage() {
                         <Trophy size={28} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
                         がんばりをみる
                     </h1>
-                    <p className={styles.subtitle}>{userName ? `${userName} さんの記録` : '学習記録'}</p>
+                    <p className={styles.subtitle}>{userName ? `${userName} ${userHonorific || 'ちゃん'}の記録` : '学習記録'}</p>
                 </div>
 
                 {/* 今日のスコアカード */}

@@ -17,6 +17,8 @@ export const useAppStore = create(
             selectedGrade: 1,
             // ユーザー名
             userName: '',
+            // ユーザー敬称（ちゃん / くん）
+            userHonorific: 'ちゃん',
 
             // --- 学習進捗データ ---
             // 各漢字のSRS状態（kanjiCharacter -> SRSカードデータ）
@@ -60,6 +62,12 @@ export const useAppStore = create(
              * @param {string} name - ユーザー名
              */
             setUserName: (name) => set({ userName: name }),
+
+            /**
+             * ユーザー敬称を設定する
+             * @param {string} honorific - 'ちゃん' | 'くん'
+             */
+            setUserHonorific: (honorific) => set({ userHonorific: honorific }),
 
             /**
              * 問題モードを切り替える
@@ -113,6 +121,7 @@ export const useAppStore = create(
             partialize: (state) => ({
                 selectedGrade: state.selectedGrade,
                 userName: state.userName,
+                userHonorific: state.userHonorific,
                 kanjiProgress: state.kanjiProgress,
                 maxStreak: state.maxStreak,
                 extractedKanjiList: state.extractedKanjiList,
