@@ -63,7 +63,6 @@
     height: 100%;
     object-fit: cover;
     transform: scale(1.1);
-    animation: float 3s ease-in-out infinite;
 }
 
 .greetingContent {
@@ -162,9 +161,10 @@
 }
 
 .actionIcon {
-    font-size: 2.5rem;
-    line-height: 1;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .actionTitle {
@@ -198,15 +198,17 @@
 
 .actionCardHighlight {
     grid-column: span 2;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.3)) !important;
-    border: 1.5px solid #F59E0B !important;
-    position: relative;
-    overflow: hidden;
+    background: var(--color-secondary) !important;
+    border: 3px solid #D97706 !important;
+    box-shadow: 0 8px 0 #D97706 !important;
 }
 
 .actionCardHighlight:hover {
-    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.3) !important;
-    border-color: #fbbf24 !important;
+    box-shadow: 0 12px 0 #D97706 !important;
+}
+
+.actionCardHighlight:active {
+    box-shadow: 0 2px 0 #D97706 !important;
 }
 
 .badgeTop {
@@ -220,4 +222,101 @@
     padding: 2px 10px;
     border-bottom-left-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.userNameContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.userNameContainer:hover {
+    opacity: 0.8;
+}
+
+.editIcon {
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+}
+
+/* 名前登録モーダル */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    padding: 32px 24px;
+    border-radius: var(--border-radius-lg);
+    border: 4px solid var(--color-border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.modalMascot {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+}
+
+.modalTitle {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+}
+
+.modalSubtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+}
+
+.nameInput {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.25rem;
+    border: 3px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: inherit;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.nameInput:focus {
+    border-color: var(--color-primary-dark);
+}
+
+.modalActions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1.1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.1);
+    }
 }

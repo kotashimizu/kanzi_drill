@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/appStore.js';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     BarChart3,
     Target,
@@ -10,7 +11,8 @@ import {
     Trophy,
     Lightbulb,
     Flame,
-    GraduationCap
+    GraduationCap,
+    Pencil
 } from 'lucide-react';
 import styles from './HomePage.module.css';
 
@@ -20,12 +22,93 @@ import styles from './HomePage.module.css';
  */
 function HomePage() {
     const navigate = useNavigate();
-    const { userName, selectedGrade, todayCorrectCount, currentStreak, extractedKanjiList, setIsPhotoDrill } = useAppStore();
+    const {
+        userName,
+        setUserName,
+        selectedGrade,
+        todayCorrectCount,
+        currentStreak,
+        extractedKanjiList,
+        setIsPhotoDrill
+    } = useAppStore();
+
+    // 名前登録モーダルの表示状態
+    const [showNameModal, setShowNameModal] = useState(false);
+    // 入力中の名前
+    const [tempName, setTempName] = useState(userName);
+
+    // 名前が登録されていない場合はモーダルを表示
+    useEffect(() => {
+        if (!userName) {
+            setShowNameModal(true);
+        }
+    }, [userName]);
+
+    /**
+     * 名前の保存処理
+     */
+    const handleSaveName = () => {
+        if (tempName.trim()) {
+            setUserName(tempName.trim());
+            setShowNameModal(false);
+        }
+    };
 
     const displayName = userName || 'なまえ未登録';
 
     return (
         <div className={styles.container}>
+            {/* 名前登録モーダル */}
+            <AnimatePresence>
+                {showNameModal && (
+                    <motion.div
+                        className={styles.modalOverlay}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <motion.div
+                            className={styles.modalContent}
+                            initial={{ scale: 0.8, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.8, y: 20 }}
+                        >
+                            <div className={styles.modalMascot}>
+                                <img src="/src/assets/study_mascot_helper.png" alt="マスコット" className={styles.mascotImage} style={{ animation: 'float 3s ease-in-out infinite' }} />
+                            </div>
+                            <h2 className={styles.modalTitle}>こんにちは！</h2>
+                            <p className={styles.modalSubtitle}>あなたの おなまえを おしえてね</p>
+                            <input
+                                type="text"
+                                className={styles.nameInput}
+                                value={tempName}
+                                onChange={(e) => setTempName(e.target.value)}
+                                placeholder="おなまえ"
+                                autoFocus
+                                onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                            />
+                            <div className={styles.modalActions}>
+                                <button
+                                    className="btn-primary"
+                                    onClick={handleSaveName}
+                                    disabled={!tempName.trim()}
+                                >
+                                    きめる！
+                                </button>
+                                {userName && (
+                                    <button
+                                        className="btn-secondary"
+                                        onClick={() => { setShowNameModal(false); setTempName(userName); }}
+                                    >
+                                        キャンセル
+                                    </button>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* 背景の星アニメーション */}
             <div className={styles.starsBackground} aria-hidden="true">
                 {[...Array(20)].map((_, index) => (
@@ -48,11 +131,18 @@ function HomePage() {
                 >
                     <div className={styles.greetingSection}>
                         <div className={styles.mascotWrapper}>
-                            <img src="/src/assets/study_mascot_helper.png" alt="マスコット" className={styles.mascotImage} />
+                            <img src="/src/assets/study_mascot_helper.png" alt="マスコット" className={styles.mascotImage} style={{ animation: 'float 3s ease-in-out infinite' }} />
                         </div>
                         <div className={styles.greetingContent}>
                             <p className={styles.greetingText}>いっしょに おべんきょう しよう！</p>
-                            <h1 className={styles.userName}>{displayName} ちゃん・くん</h1>
+                            <div
+                                className={styles.userNameContainer}
+                                onClick={() => { setTempName(userName); setShowNameModal(true); }}
+                                title="なまえをかえる"
+                            >
+                                <h1 className={styles.userName}>{displayName} ちゃん・くん</h1>
+                                <Pencil size={18} className={styles.editIcon} />
+                            </div>
                         </div>
                     </div>
                 </motion.div>
@@ -83,7 +173,7 @@ function HomePage() {
                         <div className={styles.scoreItem}>
                             <span className={styles.scoreNumber} style={{ color: '#7C3AED' }}>
                                 <GraduationCap size={20} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                                {selectedGrade}
+                                {selectedGrade || '全'}
                             </span>
                             <span className={styles.scoreLabel}>がくねん</span>
                         </div>
@@ -107,7 +197,6 @@ function HomePage() {
                             }}
                             id="btn-start-test-prep"
                             aria-label="テスト対策ドリルを始める"
-                            style={{ backgroundColor: 'var(--color-secondary)' }}
                         >
                             <div className={styles.badgeTop}>テストにでる！</div>
                             <span className={styles.actionIcon}><Target size={40} strokeWidth={2.5} color="#D97706" /></span>
