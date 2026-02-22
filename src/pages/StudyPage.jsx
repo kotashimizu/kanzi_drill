@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/appStore.js';
-import { getKanjiByGrade, getAllKanji } from '../data/kanjiDatabase.js';
+import { getKanjiByGrade, getAllKanji, findKanji } from '../data/kanjiDatabase.js';
 import HandwritingCanvas from '../components/HandwritingCanvas.jsx';
 import styles from './StudyPage.module.css';
 
@@ -32,10 +32,15 @@ function generateKanjiStory(kanjiData) {
  */
 function StudyPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { selectedGrade } = useAppStore();
 
-    // 表示する漢字リスト
-    const kanjiList = selectedGrade ? getKanjiByGrade(selectedGrade) : getAllKanji().slice(0, 40);
+    // 表示する漢字リスト（遷移元からの指定があればそれを使い、なければ学年別）
+    const initialKanjiList = (location.state?.kanjiList && location.state.kanjiList.length > 0)
+        ? location.state.kanjiList
+        : (selectedGrade ? getKanjiByGrade(selectedGrade) : getAllKanji().slice(0, 40));
+
+    const [kanjiList, setKanjiList] = useState(initialKanjiList);
     // 選択中の漢字インデックス
     const [selectedIndex, setSelectedIndex] = useState(0);
     // 生成されたストーリー
@@ -44,6 +49,16 @@ function StudyPage() {
     const [isGeneratingStory, setIsGeneratingStory] = useState(false);
     // 練習モード中フラグ
     const [isPracticeMode, setIsPracticeMode] = useState(false);
+
+    // 遷移時に特定の漢字が指定されている場合の処理
+    useEffect(() => {
+        if (location.state?.initialKanji) {
+            const index = kanjiList.findIndex(k => k.kanji === location.state.initialKanji);
+            if (index !== -1) {
+                setSelectedIndex(index);
+            }
+        }
+    }, [location.state, kanjiList]);
 
     const selectedKanji = kanjiList[selectedIndex];
 

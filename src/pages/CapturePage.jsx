@@ -223,16 +223,31 @@ function CapturePage() {
 
                         {/* ドリル開始ボタン */}
                         {addedKanjiSet.size > 0 && (
-                            <motion.button
-                                className="btn-primary"
-                                onClick={() => navigate('/drill')}
-                                id="btn-start-extracted-drill"
-                                style={{ width: '100%', marginTop: '20px' }}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                            >
-                                選んだ {addedKanjiSet.size} 文字でドリル開始 →
-                            </motion.button>
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                                <motion.button
+                                    className="btn-primary"
+                                    onClick={() => navigate('/drill')}
+                                    id="btn-start-extracted-drill"
+                                    style={{ flex: 1.5 }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                >
+                                    選んだ {addedKanjiSet.size} 文字でドリル開始 →
+                                </motion.button>
+                                <motion.button
+                                    className="btn-secondary"
+                                    onClick={() => {
+                                        const selectedList = [...addedKanjiSet].map(findKanji).filter(Boolean);
+                                        navigate('/study', { state: { kanjiList: selectedList, initialKanji: selectedList[0]?.kanji } });
+                                    }}
+                                    id="btn-study-extracted"
+                                    style={{ flex: 1, background: 'rgba(108, 99, 255, 0.15)', borderColor: 'var(--color-primary)' }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                >
+                                    ✍️ さっそく覚える
+                                </motion.button>
+                            </div>
                         )}
                     </motion.div>
                 )}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/appStore.js';
 import { getKanjiByGrade, getAllKanji } from '../data/kanjiDatabase.js';
+import HandwritingCanvas from '../components/HandwritingCanvas.jsx';
 import confetti from 'canvas-confetti';
 import styles from './DrillPage.module.css';
 
@@ -10,6 +11,7 @@ import styles from './DrillPage.module.css';
 const QUESTION_MODES = {
     READING: 'reading',  // 読み方問題
     MEANING: 'meaning',  // 意味当て問題
+    WRITING: 'writing',  // 書き取り問題（NEW）
 };
 
 /**
@@ -196,6 +198,11 @@ function DrillPage() {
                                 onClick={() => { setQuestionMode(QUESTION_MODES.MEANING); setSelectedAnswer(null); setIsCorrect(null); }}
                                 id="btn-mode-meaning"
                             >意味</button>
+                            <button
+                                className={questionMode === QUESTION_MODES.WRITING ? styles.modeActive : styles.modeInactive}
+                                onClick={() => { setQuestionMode(QUESTION_MODES.WRITING); setSelectedAnswer(null); setIsCorrect(null); }}
+                                id="btn-mode-writing"
+                            >書き</button>
                         </span>
                     </div>
                 </div>
@@ -213,8 +220,8 @@ function DrillPage() {
                 {/* 問題カード */}
                 <AnimatePresence mode="wait">
                     <motion.div
-                        key={currentIndex}
-                        className={`glass-card ${styles.questionCard}`}
+                        key={`${currentIndex}-${questionMode}`}
+                        className={`glass-card ${styles.questionCard} ${questionMode === QUESTION_MODES.WRITING ? styles.writingCard : ''}`}
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -50 }}
@@ -227,65 +234,131 @@ function DrillPage() {
 
                         {/* 問題文 */}
                         <p className={styles.questionLabel}>
-                            {questionMode === QUESTION_MODES.READING ? 'この漢字の読みかたは？' : 'この漢字の意味は？'}
+                            {questionMode === QUESTION_MODES.READING ? 'この漢字の読みかたは？' :
+                                questionMode === QUESTION_MODES.MEANING ? 'この漢字の意味は？' :
+                                    '読みから漢字を書いてみよう！'}
                         </p>
 
-                        {/* メインの漢字表示 */}
-                        <div
-                            className={styles.kanjiMain}
-                            style={{
-                                animation: isCorrect === false ? 'shake 0.4s ease' : 'none',
-                            }}
-                        >
-                            {currentKanji.kanji}
-                        </div>
+                        {questionMode === QUESTION_MODES.WRITING ? (
+                            /* 書き取りモードのメイン表示（読みと意味） */
+                            <div className={styles.writingPrompt}>
+                                <div className={styles.writingReadings}>
+                                    <span className={styles.onReading}>{currentKanji.on.join('・')}</span>
+                                    <span className={styles.kunReading}>{currentKanji.kun.join('・')}</span>
+                                </div>
+                                <div className={styles.writingMeaning}>{currentKanji.meaning}</div>
+                            </div>
+                        ) : (
+                            /* 読み・意味モードのメイン表示（漢字） */
+                            <div
+                                className={styles.kanjiMain}
+                                style={{
+                                    animation: isCorrect === false ? 'shake 0.4s ease' : 'none',
+                                }}
+                            >
+                                {currentKanji.kanji}
+                            </div>
+                        )}
 
-                        {/* 部首情報 */}
-                        <p className={styles.bushuInfo}>部首：{currentKanji.bushu}　{currentKanji.strokes}画</p>
+                        {/* 部首情報（書き取りモードでは答えが出るまで隠す） */}
+                        {(questionMode !== QUESTION_MODES.WRITING || selectedAnswer === 'checked') && (
+                            <p className={styles.bushuInfo}>部首：{currentKanji.bushu}　{currentKanji.strokes}画</p>
+                        )}
                     </motion.div>
                 </AnimatePresence>
 
-                {/* 選択肢ボタン */}
-                <div className={styles.choicesGrid}>
-                    {choices.map((choice, index) => {
-                        let buttonStyle = '';
-                        if (selectedAnswer !== null) {
-                            if (choice === correctAnswer) buttonStyle = styles.choiceCorrect;
-                            else if (choice === selectedAnswer) buttonStyle = styles.choiceWrong;
-                            else buttonStyle = styles.choiceDisabled;
-                        }
+                {questionMode === QUESTION_MODES.WRITING ? (
+                    /* 書き取り用キャンバスと操作エリア */
+                    <div className={styles.writingArea}>
+                        <div className={styles.canvasWrapper}>
+                            <HandwritingCanvas
+                                kanji={currentKanji.kanji}
+                                hideExample={selectedAnswer !== 'checked'}
+                            />
+                        </div>
 
-                        return (
-                            <motion.button
-                                key={`${currentIndex}-${index}`}
-                                className={`${styles.choiceButton} ${buttonStyle}`}
-                                onClick={() => handleAnswerSelect(choice)}
-                                id={`btn-choice-${index}`}
-                                disabled={selectedAnswer !== null}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.06 }}
-                                whileHover={selectedAnswer === null ? { scale: 1.03 } : {}}
-                                whileTap={selectedAnswer === null ? { scale: 0.97 } : {}}
-                            >
-                                <span className={styles.choiceIndex}>{['A', 'B', 'C', 'D'][index]}</span>
-                                <span className={styles.choiceText}>{choice}</span>
-                            </motion.button>
-                        );
-                    })}
-                </div>
+                        <div className={styles.writingActions}>
+                            {selectedAnswer === null ? (
+                                <button
+                                    className="btn-primary"
+                                    style={{ width: '100%' }}
+                                    onClick={() => setSelectedAnswer('checked')}
+                                    id="btn-check-writing"
+                                >
+                                    答えをみる
+                                </button>
+                            ) : (selectedAnswer === 'checked' && isCorrect === null) ? (
+                                <div className={styles.selfGradeButtons}>
+                                    <button
+                                        className={styles.gradeButtonWrong}
+                                        onClick={() => {
+                                            setIsCorrect(false);
+                                            recordAnswer(false);
+                                        }}
+                                        id="btn-grade-wrong"
+                                    >
+                                        ❌ わすれた
+                                    </button>
+                                    <button
+                                        className={styles.gradeButtonCorrect}
+                                        onClick={() => {
+                                            setIsCorrect(true);
+                                            recordAnswer(true);
+                                            confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ['#6C63FF', '#EC4899', '#F59E0B'] });
+                                        }}
+                                        id="btn-grade-correct"
+                                    >
+                                        ✅ できた！
+                                    </button>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                ) : (
+                    /* 選択肢ボタン（読み・意味モード用） */
+                    <div className={styles.choicesGrid}>
+                        {choices.map((choice, index) => {
+                            let buttonStyle = '';
+                            if (selectedAnswer !== null) {
+                                if (choice === correctAnswer) buttonStyle = styles.choiceCorrect;
+                                else if (choice === selectedAnswer) buttonStyle = styles.choiceWrong;
+                                else buttonStyle = styles.choiceDisabled;
+                            }
+
+                            return (
+                                <motion.button
+                                    key={`${currentIndex}-${index}`}
+                                    className={`${styles.choiceButton} ${buttonStyle}`}
+                                    onClick={() => handleAnswerSelect(choice)}
+                                    id={`btn-choice-${index}`}
+                                    disabled={selectedAnswer !== null}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.06 }}
+                                    whileHover={selectedAnswer === null ? { scale: 1.03 } : {}}
+                                    whileTap={selectedAnswer === null ? { scale: 0.97 } : {}}
+                                >
+                                    <span className={styles.choiceIndex}>{['A', 'B', 'C', 'D'][index]}</span>
+                                    <span className={styles.choiceText}>{choice}</span>
+                                </motion.button>
+                            );
+                        })}
+                    </div>
+                )}
 
                 {/* 正解・不正解フィードバック */}
                 <AnimatePresence>
-                    {selectedAnswer !== null && (
+                    {((selectedAnswer !== null && questionMode !== QUESTION_MODES.WRITING) || isCorrect !== null) && (
                         <motion.div
                             className={`${styles.feedback} ${isCorrect ? styles.feedbackCorrect : styles.feedbackWrong}`}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                         >
-                            <div className={styles.feedbackIcon}>{isCorrect ? '🎉 せいかい！' : '❌ ざんねん...'}</div>
-                            {!isCorrect && (
+                            <div className={styles.feedbackIcon}>
+                                {isCorrect ? '🎉 せいかい！' : '❌ ざんねん...'}
+                            </div>
+                            {questionMode !== QUESTION_MODES.WRITING && !isCorrect && (
                                 <div className={styles.feedbackAnswer}>正解は「{correctAnswer}」</div>
                             )}
                             <button className="btn-primary" onClick={handleNextQuestion} id="btn-next-question" style={{ marginTop: '12px' }}>

@@ -4,10 +4,11 @@ import styles from './HandwritingCanvas.module.css';
 /**
  * 手書き練習用キャンバスコンポーネント
  * @param {string} kanji - お手本として表示する漢字
+ * @param {boolean} hideExample - お手本を隠すかどうか（書き取りテスト用）
  * @param {string} color - ペンの色
  * @param {number} strokeWidth - ペンの太さ
  */
-export function HandwritingCanvas({ kanji, color = '#6C63FF', strokeWidth = 8 }) {
+export function HandwritingCanvas({ kanji, hideExample = false, color = '#6C63FF', strokeWidth = 8 }) {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [hasContent, setHasContent] = useState(false);
@@ -91,13 +92,24 @@ export function HandwritingCanvas({ kanji, color = '#6C63FF', strokeWidth = 8 })
     return (
         <div className={styles.container}>
             {/* お手本の漢字（背景として表示） */}
-            <div className={styles.exampleWrapper} aria-hidden="true">
-                <span className={styles.exampleText}>{kanji}</span>
-                <div className={styles.gridLines}>
-                    <div className={styles.lineH} />
-                    <div className={styles.lineV} />
+            {!hideExample && (
+                <div className={styles.exampleWrapper} aria-hidden="true">
+                    <span className={styles.exampleText}>{kanji}</span>
+                    <div className={styles.gridLines}>
+                        <div className={styles.lineH} />
+                        <div className={styles.lineV} />
+                    </div>
                 </div>
-            </div>
+            )}
+            {/* ガイド線（お手本がない場合も表示） */}
+            {hideExample && (
+                <div className={styles.exampleWrapper} aria-hidden="true">
+                    <div className={styles.gridLines}>
+                        <div className={styles.lineH} />
+                        <div className={styles.lineV} />
+                    </div>
+                </div>
+            )}
 
             {/* 描画キャンバス */}
             <canvas
