@@ -1,17 +1,31 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import {
+    Trophy,
+    BarChart3,
+    Flame,
+    Zap,
+    Crown,
+    Gem,
+    Sprout,
+    Bird,
+    Target,
+    LineChart,
+    Pencil,
+    ChevronLeft
+} from 'lucide-react';
 import { useAppStore } from '../store/appStore.js';
 import { getKanjiByGrade, getAllKanji } from '../data/kanjiDatabase.js';
 import styles from './ProgressPage.module.css';
 
-// ボックスレベルに対応するラベルと色
+// ボックスレベルに対応するラベルと色とアイコン
 const BOX_LEVEL_INFO = [
-    { label: '学習前', color: '#6B7280', emoji: '⬜' },
-    { label: 'みならい', color: '#F59E0B', emoji: '🟡' },
-    { label: 'れんしゅう中', color: '#3B82F6', emoji: '🔵' },
-    { label: 'おぼえた！', color: '#10B981', emoji: '🟢' },
-    { label: 'かんぺき！', color: '#8B5CF6', emoji: '🟣' },
-    { label: '達人！', color: '#EC4899', emoji: '⭐' },
+    { label: 'スタート！', color: '#B2BEC3', icon: <Sprout size={18} /> },
+    { label: 'みならい', color: '#FF9F43', icon: <Bird size={18} /> },
+    { label: 'がんばり屋', color: '#54A0FF', icon: <Target size={18} /> },
+    { label: 'おぼえた！', color: '#1DD1A1', icon: <Zap size={18} /> },
+    { label: 'かんぺき', color: '#5F27CD', icon: <Crown size={18} /> },
+    { label: '漢字マスター', color: '#EE5253', icon: <Gem size={18} /> },
 ];
 
 /**
@@ -52,9 +66,12 @@ function ProgressPage() {
                 {/* ヘッダー */}
                 <div className={styles.header}>
                     <button className="btn-secondary" onClick={() => navigate('/')} id="btn-back-from-progress" style={{ fontSize: '0.8rem', padding: '8px 14px', marginBottom: '12px' }}>
-                        ← もどる
+                        <ChevronLeft size={16} /> もどる
                     </button>
-                    <h1 className={styles.title}>🏆 がんばりをみる</h1>
+                    <h1 className={styles.title}>
+                        <Trophy size={28} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+                        がんばりをみる
+                    </h1>
                     <p className={styles.subtitle}>{userName ? `${userName} さんの記録` : '学習記録'}</p>
                 </div>
 
@@ -64,7 +81,10 @@ function ProgressPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <h2 className={styles.cardTitle}>📊 今日のきろく</h2>
+                    <h2 className={styles.cardTitle}>
+                        <BarChart3 size={20} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+                        今日のきろく
+                    </h2>
                     <div className={styles.statsGrid}>
                         <div className={styles.statItem}>
                             <span className={styles.statValue} style={{ color: '#10B981' }}>{todayCorrectCount}</span>
@@ -79,11 +99,15 @@ function ProgressPage() {
                             <span className={styles.statLabel}>せいかいりつ</span>
                         </div>
                         <div className={styles.statItem}>
-                            <span className={styles.statValue} style={{ color: '#A78BFA' }}>🔥 {currentStreak}</span>
+                            <span className={styles.statValue} style={{ color: '#A78BFA', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                <Flame size={20} fill="#A78BFA" /> {currentStreak}
+                            </span>
                             <span className={styles.statLabel}>れんぞく</span>
                         </div>
                     </div>
-                    <div className={styles.maxStreak}>最大ストリーク：🔥 {maxStreak} 連続</div>
+                    <div className={styles.maxStreak}>
+                        最大ストリーク：<Flame size={14} style={{ verticalAlign: 'middle' }} /> {maxStreak} 連続
+                    </div>
                 </motion.div>
 
                 {/* マスター達成率 */}
@@ -94,7 +118,10 @@ function ProgressPage() {
                     transition={{ delay: 0.1 }}
                 >
                     <div className={styles.masteryHeader}>
-                        <h2 className={styles.cardTitle}>⚡ マスター率</h2>
+                        <h2 className={styles.cardTitle}>
+                            <Zap size={20} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+                            マスター率
+                        </h2>
                         <span className={styles.masteryPercentage}>{masteredPercentage}%</span>
                     </div>
                     <div className={styles.masteryBar}>
@@ -115,11 +142,14 @@ function ProgressPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                 >
-                    <h2 className={styles.cardTitle}>📈 ボックス別の漢字</h2>
+                    <h2 className={styles.cardTitle}>
+                        <LineChart size={20} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+                        ボックス別の漢字
+                    </h2>
                     <div className={styles.levelList}>
                         {BOX_LEVEL_INFO.map((levelInfo, level) => (
                             <div key={level} className={styles.levelItem}>
-                                <span className={styles.levelEmoji}>{levelInfo.emoji}</span>
+                                <span className={styles.levelEmoji} style={{ color: levelInfo.color }}>{levelInfo.icon}</span>
                                 <div className={styles.levelInfo}>
                                     <span className={styles.levelLabel}>{levelInfo.label}</span>
                                     <div className={styles.levelBar}>
@@ -148,7 +178,7 @@ function ProgressPage() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
                 >
-                    📝 ドリルをやってレベルアップ！
+                    <Pencil size={18} /> ドリルをやってレベルアップ！
                 </motion.button>
             </div>
         </div>

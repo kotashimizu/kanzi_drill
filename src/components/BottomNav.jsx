@@ -1,12 +1,13 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Home, Camera, BookOpen, Trophy } from 'lucide-react';
 import styles from './BottomNav.module.css';
 
 // ナビゲーションアイテムの定義
 const NAV_ITEMS = [
-    { path: '/', icon: '🏠', label: 'ホーム', id: 'nav-home' },
-    { path: '/capture', icon: '📷', label: '写真', id: 'nav-capture' },
-    { path: '/study', icon: '📚', label: '学ぶ', id: 'nav-study' },
-    { path: '/progress', icon: '🏆', label: '記録', id: 'nav-progress' },
+    { path: '/', icon: <Home size={20} />, label: 'ホーム', id: 'nav-home' },
+    { path: '/capture', icon: <Camera size={20} />, label: '写真', id: 'nav-capture' },
+    { path: '/study', icon: <BookOpen size={20} />, label: '学ぶ', id: 'nav-study' },
+    { path: '/progress', icon: <Trophy size={20} />, label: '記録', id: 'nav-progress' },
 ];
 
 /**

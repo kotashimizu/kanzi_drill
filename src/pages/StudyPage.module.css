@@ -1,155 +1,184 @@
 .header {
-    margin-bottom: 20px;
-}
-
-.title {
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 900;
-    margin-bottom: 6px;
-}
-
-.subtitle {
-    color: var(--color-text-secondary);
-    font-size: 0.875rem;
-}
-
-/* 詳細カード */
-.detailCard {
-    padding: 28px 24px;
-    text-align: center;
     margin-bottom: 24px;
 }
 
-.kanjiHero {
-    font-family: var(--font-display);
-    font-size: 7rem;
+.title {
+    font-size: 1.75rem;
     font-weight: 900;
-    line-height: 1;
-    background: linear-gradient(135deg, #fff, #A78BFA);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 20px;
+    color: var(--color-text-primary);
 }
 
-/* 情報グリッド */
+.subtitle {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    font-weight: 700;
+}
+
+/* 漢字詳細カード */
+.detailCard {
+    min-height: 480px;
+    margin-bottom: 32px;
+    background: white;
+    border: 3px solid var(--color-border);
+}
+
+.kanjiHero {
+    font-size: 8rem;
+    font-weight: 950;
+    color: var(--color-text-primary);
+    text-align: center;
+    line-height: 1;
+    margin: 24px 0;
+    font-family: var(--font-display);
+    text-shadow: 6px 6px 0 rgba(255, 210, 0, 0.2);
+    animation: float 4s ease-in-out infinite;
+}
+
 .infoGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
 .infoItem {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: var(--border-radius-sm);
+    background: var(--color-bg);
     padding: 12px;
-    text-align: center;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .infoLabel {
-    display: block;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--color-text-secondary);
-    font-weight: 600;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 800;
 }
 
 .infoValue {
     font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-primary-light);
+    font-weight: 900;
+    color: var(--color-text-primary);
 }
 
-/* 意味 */
 .meaningSection {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.2);
+    background: #FFF9E6;
+    padding: 16px;
     border-radius: var(--border-radius-sm);
-    padding: 14px;
-    margin-bottom: 20px;
-    text-align: left;
+    margin-bottom: 24px;
+    border: 2px dashed #FFD200;
 }
 
 .meaningLabel {
+    font-size: 0.875rem;
+    font-weight: 900;
+    color: var(--color-secondary);
     display: block;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #FCD34D;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .meaningText {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+}
+
+.studyActions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.storyBox {
+    background: #F0F9FF;
+    padding: 16px;
+    border-radius: var(--border-radius-sm);
+    border-left: 6px solid #54A0FF;
+}
+
+.storyText {
     font-size: 0.9375rem;
+    font-weight: 700;
     color: var(--color-text-primary);
     line-height: 1.6;
 }
 
-/* AIストーリー */
-.storyBox {
-    background: rgba(108, 99, 255, 0.1);
-    border: 1px solid rgba(108, 99, 255, 0.3);
-    border-radius: var(--border-radius-sm);
-    padding: 16px;
-    margin-top: 16px;
-    overflow: hidden;
+/* 練習モード用 */
+.practiceHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
 }
 
-.storyText {
-    font-size: 0.9rem;
+.practiceHint {
+    font-size: 0.9375rem;
+    font-weight: 800;
     color: var(--color-text-primary);
-    line-height: 1.8;
-    text-align: left;
+}
+
+.exitPracticeBtn {
+    background: var(--color-danger);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.practiceTip {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: 12px;
+    font-weight: 700;
 }
 
 /* 漢字リスト */
 .listTitle {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-text-secondary);
-    margin-bottom: 12px;
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+    color: var(--color-text-primary);
 }
 
 .kanjiListWrapper {
+    margin: 0 -20px;
+    padding: 0 20px;
     overflow-x: auto;
-    margin: 0 -16px;
-    padding: 0 16px;
-    scrollbar-width: none;
-}
-
-.kanjiListWrapper::-webkit-scrollbar {
-    display: none;
+    -webkit-overflow-scrolling: touch;
 }
 
 .kanjiList {
     display: flex;
-    gap: 8px;
-    padding-bottom: 12px;
+    gap: 12px;
+    padding-bottom: 16px;
     width: max-content;
 }
 
 .kanjiListItem {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
+    background: white;
+    border: 3px solid var(--color-border);
     border-radius: var(--border-radius-sm);
-    background: var(--color-bg-glass);
-    border: 1.5px solid var(--color-border);
-    font-family: var(--font-display);
-    font-size: 1.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
     font-weight: 900;
-    color: var(--color-text-primary);
     cursor: pointer;
-    transition: var(--transition-smooth);
-    flex-shrink: 0;
-    backdrop-filter: blur(10px);
+    transition: var(--transition-pop);
+    box-shadow: 0 4px 0 var(--color-border);
 }
 
 .kanjiListItemActive {
-    border-color: var(--color-primary);
-    background: rgba(108, 99, 255, 0.2);
-    color: var(--color-primary-light);
-    box-shadow: 0 0 12px rgba(108, 99, 255, 0.3);
+    background: var(--color-primary);
+    border-color: #E6BD00;
+    color: white;
+    box-shadow: 0 6px 0 #E6BD00;
+    transform: translateY(-2px);
 }

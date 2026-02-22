@@ -4,10 +4,10 @@
     left: 0;
     right: 0;
     height: 72px;
-    background: rgba(15, 10, 42, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-top: 2px solid var(--color-border);
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -48,14 +48,14 @@
 
 .navLabel {
     font-size: 0.625rem;
-    font-weight: 600;
+    font-weight: 800;
     color: var(--color-text-secondary);
     font-family: var(--font-primary);
     transition: color 0.2s ease;
 }
 
 .navItemActive .navLabel {
-    color: var(--color-primary-light);
+    color: var(--color-primary-dark);
 }
 
 .activeIndicator {

@@ -1,16 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/appStore.js';
 import { motion } from 'framer-motion';
+import { BookOpen, Sparkles, Check, ChevronLeft } from 'lucide-react';
 import styles from './GradeSelectPage.module.css';
 
 // 学年の情報定義
 const GRADE_OPTIONS = [
-    { grade: 1, label: '1年生', kanji: '一', color: '#EF4444', bg: 'rgba(239,68,68,0.15)', count: '80字' },
-    { grade: 2, label: '2年生', kanji: '二', color: '#F59E0B', bg: 'rgba(245,158,11,0.15)', count: '160字' },
-    { grade: 3, label: '3年生', kanji: '三', color: '#10B981', bg: 'rgba(16,185,129,0.15)', count: '200字' },
-    { grade: 4, label: '4年生', kanji: '四', color: '#3B82F6', bg: 'rgba(59,130,246,0.15)', count: '202字' },
-    { grade: 5, label: '5年生', kanji: '五', color: '#8B5CF6', bg: 'rgba(139,92,246,0.15)', count: '193字' },
-    { grade: 6, label: '6年生', kanji: '六', color: '#EC4899', bg: 'rgba(236,72,153,0.15)', count: '191字' },
+    { grade: 1, label: '1年生', kanji: '一', color: '#FF6B6B', bg: '#FFF0F0', count: '80字' },
+    { grade: 2, label: '2年生', kanji: '二', color: '#FF9F43', bg: '#FFF5E6', count: '160字' },
+    { grade: 3, label: '3年生', kanji: '三', color: '#1DD1A1', bg: '#E6FFF5', count: '200字' },
+    { grade: 4, label: '4年生', kanji: '四', color: '#54A0FF', bg: '#EBF4FF', count: '202字' },
+    { grade: 5, label: '5年生', kanji: '五', color: '#5F27CD', bg: '#F3EFFF', count: '193字' },
+    { grade: 6, label: '6年生', kanji: '六', color: '#EE5253', bg: '#FFF1F1', count: '191字' },
 ];
 
 /**
@@ -40,9 +41,12 @@ function GradeSelectPage() {
                     className={styles.header}
                 >
                     <button className="btn-secondary" onClick={() => navigate('/')} id="btn-back-home" style={{ marginBottom: '16px', fontSize: '0.875rem', padding: '8px 16px' }}>
-                        ← もどる
+                        <ChevronLeft size={16} /> もどる
                     </button>
-                    <h1 className={styles.title}>📚 学年を選ぼう</h1>
+                    <h1 className={styles.title}>
+                        <BookOpen size={28} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+                        学年を選ぼう
+                    </h1>
                     <p className={styles.subtitle}>学習する漢字の学年を選んでね</p>
                 </motion.div>
 
@@ -76,7 +80,8 @@ function GradeSelectPage() {
                             {/* 選択中インジケーター */}
                             {selectedGrade === option.grade && (
                                 <div className={styles.selectedBadge} style={{ background: option.color }}>
-                                    ✓ 選択中
+                                    <Check size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                                    選択中
                                 </div>
                             )}
                         </motion.button>
@@ -94,9 +99,9 @@ function GradeSelectPage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                 >
-                    <span style={{ fontSize: '1.5rem' }}>🌟</span>
+                    <Sparkles size={32} color="var(--color-secondary)" />
                     <div>
-                        <div style={{ fontWeight: 700 }}>全学年ミックス</div>
+                        <div style={{ fontWeight: 800 }}>全学年ミックス</div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>すべての漢字から出題</div>
                     </div>
                 </motion.button>

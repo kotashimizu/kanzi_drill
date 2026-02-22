@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useImperativeHandle, forwardRef } from 'react';
+import { Trash2 } from 'lucide-react';
 import styles from './HandwritingCanvas.module.css';
 
 /**
@@ -8,10 +9,27 @@ import styles from './HandwritingCanvas.module.css';
  * @param {string} color - ペンの色
  * @param {number} strokeWidth - ペンの太さ
  */
-export function HandwritingCanvas({ kanji, hideExample = false, color = '#6C63FF', strokeWidth = 8 }) {
+export const HandwritingCanvas = forwardRef(({ kanji, hideExample = false, color = '#5C4033', strokeWidth = 10 }, ref) => {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [hasContent, setHasContent] = useState(false);
+
+    // 外部からのメソッド呼び出しを定義
+    useImperativeHandle(ref, () => ({
+        /**
+         * キャンバスの内容をDataURL（画像）として取得する
+         * @returns {string} - PNG画像データ
+         */
+        getDataURL: () => {
+            return canvasRef.current?.toDataURL('image/png');
+        },
+        /**
+         * キャンバスをクリアする
+         */
+        clear: () => {
+            clearCanvas();
+        }
+    }));
 
     // キャンバスの初期化
     useEffect(() => {
@@ -132,11 +150,11 @@ export function HandwritingCanvas({ kanji, hideExample = false, color = '#6C63FF
                     disabled={!hasContent}
                     title="消去"
                 >
-                    🗑️ 全部消す
+                    <Trash2 size={16} style={{ marginRight: '4px' }} /> 全部消す
                 </button>
             </div>
         </div>
     );
-}
+});
 
 export default HandwritingCanvas;

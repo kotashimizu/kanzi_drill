@@ -1,6 +1,14 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Camera,
+    Search,
+    BookOpen,
+    PencilLine,
+    ChevronRight,
+    Loader2
+} from 'lucide-react';
 import { useAppStore } from '../store/appStore.js';
 import { findKanji } from '../data/kanjiDatabase.js';
 import styles from './CapturePage.module.css';
@@ -25,7 +33,7 @@ function extractKanjiFromText(text) {
  */
 function CapturePage() {
     const navigate = useNavigate();
-    const { setExtractedKanji } = useAppStore();
+    const { setExtractedKanji, setIsPhotoDrill } = useAppStore();
     const fileInputRef = useRef(null);
 
     // アップロードされた画像のURL
@@ -117,7 +125,10 @@ function CapturePage() {
                     <button className="btn-secondary" onClick={() => navigate('/')} id="btn-back-from-capture" style={{ fontSize: '0.8rem', padding: '8px 14px' }}>
                         ← もどる
                     </button>
-                    <h1 className={styles.title}>📷 写真からドリル</h1>
+                    <h1 className={styles.title}>
+                        <Camera size={28} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+                        写真からドリル
+                    </h1>
                     <p className={styles.subtitle}>学校のドリルや教科書を撮影して問題を作ろう！</p>
                 </div>
 
@@ -141,7 +152,7 @@ function CapturePage() {
                         </div>
                     ) : (
                         <div className={styles.uploadPlaceholder}>
-                            <span className={styles.uploadIcon}>📸</span>
+                            <Camera size={64} color="var(--color-text-secondary)" />
                             <p className={styles.uploadText}>ドリルの写真をアップロード</p>
                             <p className={styles.uploadHint}>タップまたはドラッグ＆ドロップ</p>
                         </div>
@@ -167,14 +178,17 @@ function CapturePage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                     >
-                        🔍 漢字を読み取る
+                        <Search size={18} /> 漢字を読み取る
                     </motion.button>
                 )}
 
                 {/* OCR処理中 */}
                 {ocrStatus === 'processing' && (
                     <motion.div className={`glass-card ${styles.progressCard}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <p className={styles.processingText}>📖 読み取り中... {ocrProgress}%</p>
+                        <p className={styles.processingText}>
+                            <Loader2 size={18} className="spin" style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+                            読み取り中... {ocrProgress}%
+                        </p>
                         <div className={styles.ocrProgressBar}>
                             <motion.div
                                 className={styles.ocrProgressFill}
@@ -226,13 +240,16 @@ function CapturePage() {
                             <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
                                 <motion.button
                                     className="btn-primary"
-                                    onClick={() => navigate('/drill')}
+                                    onClick={() => {
+                                        setIsPhotoDrill(true);
+                                        navigate('/drill');
+                                    }}
                                     id="btn-start-extracted-drill"
                                     style={{ flex: 1.5 }}
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                 >
-                                    選んだ {addedKanjiSet.size} 文字でドリル開始 →
+                                    選んだ {addedKanjiSet.size} 文字でドリル開始 <ChevronRight size={18} />
                                 </motion.button>
                                 <motion.button
                                     className="btn-secondary"
@@ -241,11 +258,11 @@ function CapturePage() {
                                         navigate('/study', { state: { kanjiList: selectedList, initialKanji: selectedList[0]?.kanji } });
                                     }}
                                     id="btn-study-extracted"
-                                    style={{ flex: 1, background: 'rgba(108, 99, 255, 0.15)', borderColor: 'var(--color-primary)' }}
+                                    style={{ flex: 1, background: 'rgba(255, 235, 153, 0.3)', borderColor: 'var(--color-primary-dark)' }}
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                 >
-                                    ✍️ さっそく覚える
+                                    <PencilLine size={18} /> さっそく覚える
                                 </motion.button>
                             </div>
                         )}

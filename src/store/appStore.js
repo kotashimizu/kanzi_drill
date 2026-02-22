@@ -39,13 +39,21 @@ export const useAppStore = create(
             // --- OCR/写真取り込み ---
             // 写真から抽出した漢字のリスト
             extractedKanjiList: [],
+            // 現在のセッションが写真ドリルかどうか
+            isPhotoDrill: false,
 
             // --- アクション ---
             /**
              * 選択学年を変更する
              * @param {number} grade - 新しい学年（1〜6）
              */
-            setSelectedGrade: (grade) => set({ selectedGrade: grade }),
+            setSelectedGrade: (grade) => set({ selectedGrade: grade, isPhotoDrill: false }),
+
+            /**
+             * 写真ドリルモードを設定する
+             * @param {boolean} active - 写真ドリルを有効にするか
+             */
+            setIsPhotoDrill: (active) => set({ isPhotoDrill: active }),
 
             /**
              * ユーザー名を設定する
@@ -107,6 +115,7 @@ export const useAppStore = create(
                 userName: state.userName,
                 kanjiProgress: state.kanjiProgress,
                 maxStreak: state.maxStreak,
+                extractedKanjiList: state.extractedKanjiList,
             }),
         }
     )

@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+    BookOpen,
+    Lightbulb,
+    Sparkles,
+    PencilLine,
+    XCircle,
+    ChevronLeft
+} from 'lucide-react';
 import { useAppStore } from '../store/appStore.js';
 import { getKanjiByGrade, getAllKanji, findKanji } from '../data/kanjiDatabase.js';
 import HandwritingCanvas from '../components/HandwritingCanvas.jsx';
@@ -97,9 +105,12 @@ function StudyPage() {
                 {/* ヘッダー */}
                 <div className={styles.header}>
                     <button className="btn-secondary" onClick={() => navigate('/')} id="btn-back-from-study" style={{ fontSize: '0.8rem', padding: '8px 14px', marginBottom: '12px' }}>
-                        ← もどる
+                        <ChevronLeft size={16} /> もどる
                     </button>
-                    <h1 className={styles.title}>📚 漢字を学ぼう</h1>
+                    <h1 className={styles.title}>
+                        <BookOpen size={28} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+                        漢字を学ぼう
+                    </h1>
                     <p className={styles.subtitle}>{selectedGrade ? `${selectedGrade}年生の漢字` : '全学年'}</p>
                 </div>
 
@@ -127,7 +138,7 @@ function StudyPage() {
                                         onClick={() => setIsPracticeMode(false)}
                                         id="btn-exit-practice"
                                     >
-                                        × とじる
+                                        <XCircle size={20} /> とじる
                                     </button>
                                 </div>
                                 <HandwritingCanvas kanji={selectedKanji.kanji} />
@@ -165,7 +176,7 @@ function StudyPage() {
 
                                 {/* 意味 */}
                                 <div className={styles.meaningSection}>
-                                    <span className={styles.meaningLabel}>💡 意味</span>
+                                    <span className={styles.meaningLabel}><Lightbulb size={18} /> 意味</span>
                                     <p className={styles.meaningText}>{selectedKanji.meaning}</p>
                                 </div>
 
@@ -177,15 +188,16 @@ function StudyPage() {
                                         disabled={isGeneratingStory}
                                         style={{ flex: 1 }}
                                     >
-                                        {isGeneratingStory ? '✨ 作成中...' : '✨ 物語で覚える'}
+                                        {isGeneratingStory ? <Sparkles size={18} className="spin" /> : <Sparkles size={18} />}
+                                        {isGeneratingStory ? '作成中...' : '物語で覚える'}
                                     </button>
                                     <button
                                         className="btn-secondary"
                                         onClick={() => setIsPracticeMode(true)}
                                         id="btn-start-practice"
-                                        style={{ flex: 1, background: 'rgba(108, 99, 255, 0.15)', borderColor: 'var(--color-primary)' }}
+                                        style={{ flex: 1, background: 'rgba(255, 235, 153, 0.3)', borderColor: 'var(--color-primary-dark)' }}
                                     >
-                                        ✍️ 手書き練習
+                                        <PencilLine size={18} /> 手書き練習
                                     </button>
                                 </div>
 
@@ -197,7 +209,10 @@ function StudyPage() {
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
                                         >
-                                            <p className={styles.storyText}>📖 {story}</p>
+                                            <p className={styles.storyText}>
+                                                <BookOpen size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                                                {story}
+                                            </p>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
