@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,12 +11,10 @@ import {
     ChevronRight,
     RotateCcw,
     Home,
-    Search,
-    BookOpen,
-    Pencil
+    Search
 } from 'lucide-react';
 import { useAppStore } from '../store/appStore.js';
-import { getKanjiByGrade, getAllKanji } from '../data/kanjiDatabase.js';
+import { getKanjiByGrade, getAllKanji, findKanji } from '../data/kanjiDatabase.js';
 import HandwritingCanvas from '../components/HandwritingCanvas.jsx';
 import confetti from 'canvas-confetti';
 import styles from './DrillPage.module.css';
@@ -62,13 +60,36 @@ function generateChoices(correctKanji, allKanjiList, mode) {
     return shuffleArray([correctAnswer, ...distractors]);
 }
 
+function pickFocusedMode(kanjiItem) {
+    const hasReading = kanjiItem && ([...(kanjiItem.on || []), ...(kanjiItem.kun || [])].length > 0);
+    if (!hasReading) return QUESTION_MODES.WRITING;
+    return Math.random() < 0.5 ? QUESTION_MODES.READING : QUESTION_MODES.WRITING;
+}
+
+function normalizeSchoolMistakes(list) {
+    return (list || [])
+        .map((entry) => (typeof entry === 'string' ? { kanji: entry, targetGrade: null } : entry))
+        .filter((entry) => entry && typeof entry.kanji === 'string')
+        .map((entry) => ({ ...entry, kanji: entry.kanji.trim() }))
+        .filter((entry) => entry.kanji.length > 0);
+}
+
 /**
  * 漢字ドリルの問題出題ページ（メインのゲーム画面）
  * SRSに基づいて問題を出題し、正解・不正解に応じてレベル管理する
  */
 function DrillPage() {
     const navigate = useNavigate();
-    const { selectedGrade, recordAnswer, updateKanjiProgress, kanjiProgress, extractedKanjiList, isPhotoDrill } = useAppStore();
+    const {
+        selectedGrade,
+        recordAnswer,
+        extractedKanjiList,
+        isPhotoDrill,
+        isFocusedDrill,
+        schoolMistakeKanjiList,
+        drillMistakeKanjiList,
+        addDrillMistakeKanji,
+    } = useAppStore();
 
     // キャンバス操作用のref
     const handwritingRef = useRef(null);
@@ -93,21 +114,65 @@ function DrillPage() {
     const [isCheckingAI, setIsCheckingAI] = useState(false);
 
     // 漢字リストを初期化する
-    const allKanjiList = isPhotoDrill ? extractedKanjiList : (selectedGrade ? getKanjiByGrade(selectedGrade) : getAllKanji());
+    const allKanjiList = useMemo(() => {
+        if (isPhotoDrill) return extractedKanjiList;
+
+        if (isFocusedDrill) {
+            const schoolEntries = normalizeSchoolMistakes(schoolMistakeKanjiList).map((entry) => ({
+                ...entry,
+                targetGrade: entry.targetGrade ?? selectedGrade ?? null,
+            }));
+            const schoolMap = new Map(schoolEntries.map((entry) => [entry.kanji, entry]));
+            const mergedChars = Array.from(new Set([
+                ...schoolMap.keys(),
+                ...(drillMistakeKanjiList || []).filter((k) => typeof k === 'string').map((k) => k.trim()).filter(Boolean),
+            ]));
+
+            return mergedChars.map((kanji) => {
+                const found = findKanji(kanji);
+                if (found) return found;
+
+                const schoolEntry = schoolMap.get(kanji);
+                return {
+                    kanji,
+                    on: [],
+                    kun: [],
+                    meaning: '学校小テストの不正解',
+                    bushu: '不明',
+                    strokes: '不明',
+                    grade: schoolEntry?.targetGrade ?? selectedGrade ?? null,
+                    isCustom: true,
+                };
+            });
+        }
+
+        return selectedGrade ? getKanjiByGrade(selectedGrade) : getAllKanji();
+    }, [isPhotoDrill, extractedKanjiList, isFocusedDrill, schoolMistakeKanjiList, drillMistakeKanjiList, selectedGrade]);
 
     useEffect(() => {
-        if (allKanjiList.length === 0) return;
+        if (allKanjiList.length === 0) {
+            setQuestionQueue([]);
+            return;
+        }
 
         if (isPhotoDrill) {
             // 写真ドリルの場合は抽出されたものすべて（シャッフルのみ）
             setQuestionQueue(shuffleArray(allKanjiList));
             setQuestionMode(QUESTION_MODES.WRITING); // テスト対策なので書き取りをデフォルトに
+        } else if (isFocusedDrill) {
+            // 特訓モードは登録された不正解のみを出題
+            const shuffledFocused = shuffleArray(allKanjiList);
+            setQuestionQueue(shuffledFocused);
+            setQuestionMode(pickFocusedMode(shuffledFocused[0]));
         } else {
             // 通常は最大15問にシャッフル
             const shuffled = shuffleArray(allKanjiList).slice(0, 15);
             setQuestionQueue(shuffled);
         }
-    }, [selectedGrade, isPhotoDrill]);
+        setCurrentIndex(0);
+        setSessionScore({ correct: 0, total: 0 });
+        setIsSessionComplete(false);
+    }, [allKanjiList, isPhotoDrill, isFocusedDrill]);
 
     // 現在の問題の選択肢を生成する
     useEffect(() => {
@@ -126,20 +191,47 @@ function DrillPage() {
             ? [...currentKanji.on, ...currentKanji.kun][0]
             : currentKanji.meaning
         : null;
+    const hasReadingData = currentKanji ? ([...currentKanji.on, ...currentKanji.kun].length > 0) : false;
+    const hasMeaningData = currentKanji ? Boolean(currentKanji.meaning) : false;
+    const isWritingAnswered = questionMode === QUESTION_MODES.WRITING && selectedAnswer === 'checked' && !isCheckingAI;
+
+    useEffect(() => {
+        if (!isFocusedDrill) return;
+        if (questionMode === QUESTION_MODES.READING && !hasReadingData) {
+            setQuestionMode(QUESTION_MODES.WRITING);
+        }
+        if (questionMode === QUESTION_MODES.MEANING && !hasMeaningData) {
+            setQuestionMode(QUESTION_MODES.WRITING);
+        }
+    }, [isFocusedDrill, questionMode, hasReadingData, hasMeaningData]);
 
     /**
      * AI（Tesseract.js）を使って手書き文字を判定する
      */
     const handleCheckWithAI = async () => {
-        if (!handwritingRef.current || !currentKanji) return;
-
-        const imageData = handwritingRef.current.getDataURL();
-        if (!imageData) return;
-
-        setIsCheckingAI(true);
+        if (!currentKanji) return;
         setSelectedAnswer('checked'); // 判定モードへ
+        setIsCheckingAI(true);
+
+        const markIncorrect = () => {
+            setIsCorrect(false);
+            recordAnswer(false);
+            addDrillMistakeKanji(currentKanji.kanji);
+            setSessionScore(prev => ({ ...prev, total: prev.total + 1 }));
+            if (isPhotoDrill) {
+                // テスト対策では再出題して定着を促す
+                setQuestionQueue(prev => [...prev, currentKanji]);
+            }
+        };
 
         try {
+            const imageData = handwritingRef.current?.getDataURL?.();
+            if (!imageData) {
+                // 画像取得に失敗しても結果は表示する
+                markIncorrect();
+                return;
+            }
+
             const Tesseract = await import('tesseract.js');
             const { data: { text } } = await Tesseract.recognize(imageData, 'jpn');
 
@@ -152,11 +244,12 @@ function DrillPage() {
                 setSessionScore(prev => ({ ...prev, correct: prev.correct + 1, total: prev.total + 1 }));
                 confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ['#6C63FF', '#EC4899', '#F59E0B'] });
             } else {
-                // 自動判定で間違っていた場合は、セルフ採点ボタンを出すために isCorrect は null のままにする
-                setIsCorrect(null);
+                markIncorrect();
             }
         } catch (error) {
             console.error('AI判定エラー:', error);
+            // AIエラー時は判定できないため不正解として扱い、次へ進めるようにする
+            markIncorrect();
         } finally {
             setIsCheckingAI(false);
         }
@@ -185,7 +278,10 @@ function DrillPage() {
             // 写真ドリル（テスト対策）で間違えた場合は、キューの最後に追加してもう一度出題
             setQuestionQueue(prev => [...prev, currentKanji]);
         }
-    }, [selectedAnswer, correctAnswer, recordAnswer, isPhotoDrill, currentKanji]);
+        if (!correct) {
+            addDrillMistakeKanji(currentKanji.kanji);
+        }
+    }, [selectedAnswer, correctAnswer, recordAnswer, isPhotoDrill, currentKanji, addDrillMistakeKanji]);
 
     /**
      * 次の問題に進む
@@ -196,8 +292,11 @@ function DrillPage() {
             setIsSessionComplete(true);
         } else {
             setCurrentIndex(nextIndex);
+            if (isFocusedDrill) {
+                setQuestionMode(pickFocusedMode(questionQueue[nextIndex]));
+            }
         }
-    }, [currentIndex, questionQueue.length]);
+    }, [currentIndex, questionQueue, isFocusedDrill]);
 
     // セッション終了画面
     if (isSessionComplete) {
@@ -222,6 +321,10 @@ function DrillPage() {
                                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                     <Camera size={24} /> テスト対策かんりょう！
                                 </span>
+                            ) : isFocusedDrill ? (
+                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                    <Star size={24} /> 特訓かんりょう！
+                                </span>
                             ) : 'ドリルかんりょう！'}
                         </h2>
                         <div className={styles.resultScore}>
@@ -231,7 +334,26 @@ function DrillPage() {
                             <span className={styles.resultUnit}>問正解</span>
                         </div>
                         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                            <button className="btn-primary" onClick={() => { setCurrentIndex(0); setSessionScore({ correct: 0, total: 0 }); setIsSessionComplete(false); const shuffled = shuffleArray(allKanjiList).slice(0, 15); setQuestionQueue(shuffled); }} id="btn-retry-drill">
+                            <button
+                                className="btn-primary"
+                                onClick={() => {
+                                    setCurrentIndex(0);
+                                    setSessionScore({ correct: 0, total: 0 });
+                                    setIsSessionComplete(false);
+                                    if (isPhotoDrill || isFocusedDrill) {
+                                        const shuffled = shuffleArray(allKanjiList);
+                                        setQuestionQueue(shuffled);
+                                        if (isFocusedDrill) {
+                                            setQuestionMode(pickFocusedMode(shuffled[0]));
+                                        } else {
+                                            setQuestionMode(QUESTION_MODES.WRITING);
+                                        }
+                                    } else {
+                                        setQuestionQueue(shuffleArray(allKanjiList).slice(0, 15));
+                                    }
+                                }}
+                                id="btn-retry-drill"
+                            >
                                 <RotateCcw size={18} /> もう一度
                             </button>
                             <button className="btn-secondary" onClick={() => navigate('/')} id="btn-home-from-result">
@@ -239,6 +361,32 @@ function DrillPage() {
                             </button>
                         </div>
                     </motion.div>
+                </div>
+            </div>
+        );
+    }
+
+    if (questionQueue.length === 0) {
+        const focusedCount = normalizeSchoolMistakes(schoolMistakeKanjiList).length + (drillMistakeKanjiList?.length || 0);
+        return (
+            <div style={{ padding: '80px 0 20px' }}>
+                <div className="app-container">
+                    <div className={`glass-card ${styles.resultCard}`}>
+                        <h2 className={styles.resultTitle}>出題できる問題がありません</h2>
+                        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '16px' }}>
+                            {isFocusedDrill
+                                ? '「不正解入力」または「ドリルをする」で間違えた漢字をためると特訓できます。'
+                                : '問題データが見つかりませんでした。'}
+                        </p>
+                        {isFocusedDrill && (
+                            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '16px', fontSize: '0.85rem' }}>
+                                現在の特訓対象: {focusedCount} 件
+                            </p>
+                        )}
+                        <button className="btn-secondary" onClick={() => navigate('/')} id="btn-home-empty-drill">
+                            <Home size={18} /> ホームへ
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -255,7 +403,7 @@ function DrillPage() {
             <div className="app-container">
                 {/* ヘッダー・進捗バー */}
                 <div className={styles.header}>
-                    <button className="btn-secondary" onClick={() => navigate('/grade')} id="btn-back-grade" style={{ fontSize: '0.8rem', padding: '8px 14px' }}>
+                    <button className="btn-secondary" onClick={() => navigate(isFocusedDrill ? '/' : '/grade')} id="btn-back-grade" style={{ fontSize: '0.8rem', padding: '8px 14px' }}>
                         ← もどる
                     </button>
                     <div className={styles.progressInfo}>
@@ -265,11 +413,13 @@ function DrillPage() {
                                 className={questionMode === QUESTION_MODES.READING ? styles.modeActive : styles.modeInactive}
                                 onClick={() => { setQuestionMode(QUESTION_MODES.READING); setSelectedAnswer(null); setIsCorrect(null); }}
                                 id="btn-mode-reading"
+                                disabled={isFocusedDrill && !hasReadingData}
                             >読み</button>
                             <button
                                 className={questionMode === QUESTION_MODES.MEANING ? styles.modeActive : styles.modeInactive}
                                 onClick={() => { setQuestionMode(QUESTION_MODES.MEANING); setSelectedAnswer(null); setIsCorrect(null); }}
                                 id="btn-mode-meaning"
+                                disabled={isFocusedDrill && !hasMeaningData}
                             >意味</button>
                             <button
                                 className={questionMode === QUESTION_MODES.WRITING ? styles.modeActive : styles.modeInactive}
@@ -303,29 +453,34 @@ function DrillPage() {
                         {/* 学年バッジ / モードバッジ */}
                         <div className={`grade-badge ${isPhotoDrill ? 'grade-badge-test' : `grade-badge-${currentKanji.grade || selectedGrade || 1}`}`}>
                             {isPhotoDrill && <Camera size={14} style={{ marginRight: '4px' }} />}
-                            {isPhotoDrill ? 'テスト対策モード' : `${currentKanji.grade || selectedGrade}年生`}
+                            {isPhotoDrill ? 'テスト対策モード' : isFocusedDrill ? '特訓モード' : `${currentKanji.grade || selectedGrade}年生`}
                         </div>
 
                         {/* 問題文 */}
                         <p className={styles.questionLabel}>
                             {questionMode === QUESTION_MODES.READING ? 'この漢字の読みかたは？' :
                                 questionMode === QUESTION_MODES.MEANING ? 'この漢字の意味は？' :
-                                    '読みから漢字を書いてみよう！'}
+                                    (hasReadingData ? '読みから漢字を書いてみよう！' : 'この漢字を書いてみよう！')}
                         </p>
 
                         {questionMode === QUESTION_MODES.WRITING ? (
                             /* 書き取りモードのメイン表示（穴埋め形式） */
                             <div className={styles.writingPrompt}>
+                                {!hasReadingData && (
+                                    <div className={styles.kanjiMain} style={{ marginBottom: '10px' }}>
+                                        {currentKanji.kanji}
+                                    </div>
+                                )}
                                 <div className={styles.writingReadings}>
-                                    <span className={styles.onReading}>{currentKanji.on.join('・')}</span>
-                                    <span className={styles.kunReading}>{currentKanji.kun.join('・')}</span>
+                                    <span className={styles.onReading}>{hasReadingData ? currentKanji.on.join('・') : '学校の小テストで間違えた漢字'}</span>
+                                    <span className={styles.kunReading}>{hasReadingData ? currentKanji.kun.join('・') : '書いておぼえよう！'}</span>
                                 </div>
                                 <div className={styles.writingBracketWrapper}>
                                     <span className={styles.bracket}>（</span>
                                     <span className={styles.bracketGap}>&nbsp;</span>
                                     <span className={styles.bracket}>）</span>
                                 </div>
-                                <div className={styles.writingMeaning}>{currentKanji.meaning}</div>
+                                <div className={styles.writingMeaning}>{currentKanji.meaning || '意味データなし'}</div>
                             </div>
                         ) : (
                             /* 読み・意味モードのメイン表示（漢字） */
@@ -370,51 +525,8 @@ function DrillPage() {
                                 >
                                     <Search size={18} /> {isCheckingAI ? 'AI判定中...' : 'AIで答え合わせ'}
                                 </button>
-                            ) : (selectedAnswer === 'checked' && isCorrect === null) ? (
-                                <div className={styles.selfGradeButtons}>
-                                    <button
-                                        className={styles.gradeButtonWrong}
-                                        onClick={() => {
-                                            setIsCorrect(false);
-                                            recordAnswer(false);
-                                            setSessionScore(prev => ({ ...prev, total: prev.total + 1 }));
-                                            if (isPhotoDrill) {
-                                                // キューの最後に追加して復習
-                                                setQuestionQueue(prev => [...prev, currentKanji]);
-                                            }
-                                        }}
-                                        id="btn-grade-wrong"
-                                    >
-                                        <XCircle size={18} /> わすれた
-                                    </button>
-                                    <button
-                                        className={styles.gradeButtonCorrect}
-                                        onClick={() => {
-                                            setIsCorrect(true);
-                                            recordAnswer(true);
-                                            setSessionScore(prev => ({ ...prev, correct: prev.correct + 1, total: prev.total + 1 }));
-                                            confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ['#6C63FF', '#EC4899', '#F59E0B'] });
-                                        }}
-                                        id="btn-grade-correct"
-                                    >
-                                        <CheckCircle2 size={18} /> できた！
-                                    </button>
-                                </div>
                             ) : null}
                         </div>
-
-                        {/* 「わからなかったら答えを見る」の補助オプション */}
-                        {selectedAnswer === null && !isCheckingAI && (
-                            <div style={{ textAlign: 'center' }}>
-                                <button
-                                    className={styles.showAnswerLink}
-                                    onClick={() => setSelectedAnswer('checked')}
-                                >
-                                    <BookOpen size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                                    答えをみる
-                                </button>
-                            </div>
-                        )}
                     </div>
                 ) : (
                     /* 選択肢ボタン（読み・意味モード用） */
@@ -450,7 +562,7 @@ function DrillPage() {
 
                 {/* 正解・不正解フィードバック */}
                 <AnimatePresence>
-                    {((selectedAnswer !== null && questionMode !== QUESTION_MODES.WRITING) || isCorrect !== null) && (
+                    {((selectedAnswer !== null && questionMode !== QUESTION_MODES.WRITING) || isCorrect !== null || isWritingAnswered) && (
                         <motion.div
                             className={`${styles.feedback} ${isCorrect ? styles.feedbackCorrect : styles.feedbackWrong}`}
                             initial={{ opacity: 0, y: 20 }}
@@ -462,15 +574,19 @@ function DrillPage() {
                                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                         <CheckCircle2 size={24} /> せいかい！
                                     </span>
-                                ) : (
+                                ) : isCorrect === false ? (
                                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                         <XCircle size={24} /> ざんねん...
+                                    </span>
+                                ) : (
+                                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                        <XCircle size={24} /> 判定できませんでした
                                     </span>
                                 )}
                             </div>
 
                             {/* おぼえるための仕掛け：テスト対策モード時は詳細情報を表示 */}
-                            {isPhotoDrill && (
+                            {(isPhotoDrill || isFocusedDrill) && (
                                 <div className={styles.studyTip}>
                                     <div className={styles.tipRow}>
                                         <span className={styles.tipLabel}>部首</span>

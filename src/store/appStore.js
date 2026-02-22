@@ -43,19 +43,31 @@ export const useAppStore = create(
             extractedKanjiList: [],
             // 現在のセッションが写真ドリルかどうか
             isPhotoDrill: false,
+            // 現在のセッションが特訓モードかどうか
+            isFocusedDrill: false,
+            // 学校小テストで間違えた漢字（{ kanji, targetGrade } の配列）
+            schoolMistakeKanjiList: [],
+            // ドリルで間違えた漢字（1文字配列）
+            drillMistakeKanjiList: [],
 
             // --- アクション ---
             /**
              * 選択学年を変更する
              * @param {number} grade - 新しい学年（1〜6）
              */
-            setSelectedGrade: (grade) => set({ selectedGrade: grade, isPhotoDrill: false }),
+            setSelectedGrade: (grade) => set({ selectedGrade: grade, isPhotoDrill: false, isFocusedDrill: false }),
 
             /**
              * 写真ドリルモードを設定する
              * @param {boolean} active - 写真ドリルを有効にするか
              */
-            setIsPhotoDrill: (active) => set({ isPhotoDrill: active }),
+            setIsPhotoDrill: (active) => set({ isPhotoDrill: active, isFocusedDrill: active ? false : get().isFocusedDrill }),
+
+            /**
+             * 特訓モードを設定する
+             * @param {boolean} active - 特訓モードを有効にするか
+             */
+            setIsFocusedDrill: (active) => set({ isFocusedDrill: active, isPhotoDrill: active ? false : get().isPhotoDrill }),
 
             /**
              * ユーザー名を設定する
@@ -110,6 +122,46 @@ export const useAppStore = create(
             setExtractedKanji: (kanjiList) => set({ extractedKanjiList: kanjiList }),
 
             /**
+             * 学校小テストで間違えた漢字を追加する（同じ漢字は上書き）
+             * @param {Array<string>} kanjiList - 追加する漢字配列
+             * @param {number|null} targetGrade - 保存する対象学年（プロフィール学年）
+             */
+            addSchoolMistakeKanji: (kanjiList, targetGrade) =>
+                set((state) => {
+                    const normalizedKanjiList = (kanjiList || [])
+                        .filter((item) => typeof item === 'string')
+                        .map((item) => item.trim())
+                        .filter((item) => item.length > 0);
+
+                    const existingEntries = (state.schoolMistakeKanjiList || []).map((entry) =>
+                        typeof entry === 'string' ? { kanji: entry, targetGrade: state.selectedGrade ?? null } : entry
+                    );
+                    const entryMap = new Map(existingEntries.map((entry) => [entry.kanji, entry]));
+
+                    normalizedKanjiList.forEach((kanji) => {
+                        entryMap.set(kanji, { kanji, targetGrade: targetGrade ?? state.selectedGrade ?? null });
+                    });
+
+                    return { schoolMistakeKanjiList: Array.from(entryMap.values()) };
+                }),
+
+            /**
+             * ドリルで間違えた漢字を記録する（重複は除外）
+             * @param {string} kanji - 間違えた漢字
+             */
+            addDrillMistakeKanji: (kanji) =>
+                set((state) => ({
+                    drillMistakeKanjiList: state.drillMistakeKanjiList.includes(kanji)
+                        ? state.drillMistakeKanjiList
+                        : [...state.drillMistakeKanjiList, kanji],
+                })),
+
+            /**
+             * 学校小テストの不正解リストをクリア
+             */
+            clearSchoolMistakeKanji: () => set({ schoolMistakeKanjiList: [] }),
+
+            /**
              * 今日のスコアをリセットする（翌日・新セッション）
              */
             resetTodayScore: () =>
@@ -117,7 +169,18 @@ export const useAppStore = create(
         }),
         {
             name: 'kanzi-drill-storage', // LocalStorageのキー名
-            // kanjiProgressのみ永続化（一時データは除外）
+            version: 2,
+            migrate: (persistedState, version) => {
+                if (!persistedState) return persistedState;
+                if (version < 2 && Array.isArray(persistedState.schoolMistakeKanjiList)) {
+                    const selectedGrade = persistedState.selectedGrade ?? null;
+                    persistedState.schoolMistakeKanjiList = persistedState.schoolMistakeKanjiList.map((entry) =>
+                        typeof entry === 'string' ? { kanji: entry, targetGrade: selectedGrade } : entry
+                    );
+                }
+                return persistedState;
+            },
+            // 学習に必要な永続データのみ保存（一時セッション状態は除外）
             partialize: (state) => ({
                 selectedGrade: state.selectedGrade,
                 userName: state.userName,
@@ -125,6 +188,8 @@ export const useAppStore = create(
                 kanjiProgress: state.kanjiProgress,
                 maxStreak: state.maxStreak,
                 extractedKanjiList: state.extractedKanjiList,
+                schoolMistakeKanjiList: state.schoolMistakeKanjiList,
+                drillMistakeKanjiList: state.drillMistakeKanjiList,
             }),
         }
     )
